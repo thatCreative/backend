@@ -18,7 +18,7 @@ namespace PageRank
     {
         public void run()
         {
-            Main(null);
+            Main(new String[0]);
         }
         public static void Main(string[] args)
         {

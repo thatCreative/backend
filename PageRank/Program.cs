@@ -1,6 +1,8 @@
-//toolbarqueries.google.com
+﻿//toolbarqueries.google.com
 //Import this  SystemSystem.Web.Mvc; //<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
 //Loved this implementation
+#pragma warning disable SYSLIB0014
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,27 +16,45 @@ namespace PageRank
 {
     public class MainClass
     {
+        public void run()
+        {
+            Main(null);
+        }
         public static void Main(string[] args)
         {
             string url = "http://www.google.com/search?q=site:www.google.com";
-            string html = GetHtml(url);
-            string[] links = GetLinks(html);
-            foreach (string link in links)
+            try {
+                string html = GetHtml(url);
+                int pr = MyPR(url);
+                string[] links = GetLinks(html);
+                foreach (string link in links)
+                {
+                    Console.WriteLine(link);
+                    Console.WriteLine(pr);
+                }
+            }
+            catch (Exception e)
             {
-                Console.WriteLine(link);
+                Console.WriteLine(e.Message);
             }
         }
-
         public static string GetHtml(string url)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36";
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            StreamReader reader = new StreamReader(response.GetResponseStream());
-            string html = reader.ReadToEnd();
-            return html;
-        }
+            try {
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+                string html = reader.ReadToEnd();
+                return html;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return "";
+            }
 
+        }
         public static string[] GetLinks(string html)
         {
             List<string> links = new List<string>();
@@ -46,9 +66,7 @@ namespace PageRank
             }
             return links.ToArray();
         }
-        class GetPageRank
-        {
-            private const UInt32 myConst = 0xE6359A60;
+        private const UInt32 myConst = 0xE6359A60;
             private static void _Hashing(ref UInt32 a, ref UInt32 b, ref UInt32 c)
             {
                 a -= b; a -= c; a ^= c >> 13;
@@ -61,9 +79,9 @@ namespace PageRank
                 b -= c; b -= a; b ^= a << 10;
                 c -= a; c -= b; c ^= b >> 15;
             }
-            public static string PerfectHash(string theURL = "https://www.amazon.com/")
+            public static string PerfectHash(string theURL = "http://www.google.com/search?q=site:www.google.com")
             {
-                string url = "https://www.amazon.com/";
+                string url = "http://www.google.com/search?q=site:www.google.com";
 
                 url = string.Format("info:{0}", theURL);
 
@@ -134,7 +152,7 @@ namespace PageRank
                 return string.Format("6{0}", c);
             }
 
-            public static int MyPR(string myURL)
+            public static int MyPR(string myURL)//calculates the PageRank of a given URL
             {
                 string strDomainHash = PerfectHash(myURL);
                 string myRequestURL = string.Format("http://toolbarqueries.google.com/" +
@@ -157,6 +175,5 @@ namespace PageRank
                     return -1;
                 }
             }
-        }
     }
 }

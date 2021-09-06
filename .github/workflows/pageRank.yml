@@ -1,0 +1,41 @@
+name: dotnet-pageRank
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+
+jobs:
+  Build:
+
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+       os: [windows-latest, ubuntu-latest, macos-latest] # Now it can run on multiple OS
+       env: [6.0.100-preview.1.21103.13, 6.0.100-preview.2.21155.3, 6.0.100-preview.3.21202.5, 6.0.100-preview.4.21255.9, 6.0.100-preview.5.21302.13, 6.0.100-preview.6.21355.2, 6.0.100-preview.7.21379.14]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1.8.1
+      with:
+        dotnet-version: ${{ matrix.env }}
+
+    - name: Install dependencies
+      working-directory: PageRank/
+      run: dotnet restore
+
+    - name: Build
+      working-directory: PageRank/
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run
+      working-directory: PageRank/
+      run: dotnet run --configuration Release --no-restore
+
+    - name: Test
+      working-directory: TestingPageRank/
+      run: dotnet test --no-restore --verbosity normal

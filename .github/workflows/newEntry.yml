@@ -1,4 +1,4 @@
-name: .NET CI
+name: dotnet-newEntry
 on:
   push:
   pull_request:
@@ -25,17 +25,17 @@ jobs:
         dotnet-version: ${{ matrix.env }}
 
     - name: Install dependencies
-      working-directory: PageRank/
+      working-directory: NewEntry/
       run: dotnet restore
 
     - name: Build
-      working-directory: PageRank/
+      working-directory: NewEntry/
       run: dotnet build --configuration Release --no-restore
 
     - name: Run
-      working-directory: PageRank/
+      working-directory: NewEntry/
       run: dotnet run --configuration Release --no-restore
 
     - name: Test
-      working-directory: TestingPageRank/
+      working-directory: TestingNewEntry/
       run: dotnet test --no-restore --verbosity normal
